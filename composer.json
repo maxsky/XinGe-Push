@@ -1,0 +1,21 @@
+{
+    "name": "maxsky/xg-push",
+    "description": "Tencent XinGe Push Service.",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Max Sky",
+            "email": "admin@maxsky.cc"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "XinGe\\": "src"
+        },
+        "files": [
+            "src/common.php"
+        ]
+    },
+}
