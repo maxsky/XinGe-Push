@@ -13,9 +13,6 @@
     "autoload": {
         "psr-4": {
             "XinGe\\": "src"
-        },
-        "files": [
-            "src/common.php"
-        ]
-    },
+        }
+    }
 }
