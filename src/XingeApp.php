@@ -59,58 +59,135 @@ class XingeApp {
     }
 
     /**
-     * 使用默认设置推送消息给单个android版账户
+     * 推送消息给单个 Android 账户
+     *
+     * @param string $accessId
+     * @param string $secretKey
+     * @param string $account 目标账户
+     * @param string $title 推送标题
+     * @param string $content 推送内容
+     * @param array  $behaviour 点击通知行为，默认打开 App。传入长度为 2 的数组。元素 0 为行为，元素 1 为行为目标数据，如：
+     * 打开指定 Activity 传入 [ClickAction::TYPE_ACTIVITY, 'com.example.MyActivityClassName']
+     * 打开指定 URL 传入 [ClickAction::TYPE_URL, 'http://example.com']
+     * 打开 Intent 传入 [ClickAction::TYPE_INTENT, 'xgscheme://com.xg.push/notify_detail']（自定义协议）
+     * @param array  $customData 自定义数据，传入 key => value 形式的关联数组
+     * @return array|mixed
      */
-    public static function PushAccountAndroid($accessId, $secretKey, $title, $content, $account) {
+    public static function PushAccountAndroid($accessId, $secretKey, $account,
+                                              $title, $content, $behaviour = [ClickAction::TYPE_ACTIVITY, null],
+                                              $customData = []) {
         $push = new XingeApp($accessId, $secretKey);
         $mess = new Message();
         $mess->setTitle($title);
         $mess->setContent($content);
         $mess->setType(Message::TYPE_NOTIFICATION);
         $mess->setStyle(new Style(0, 1, 1, 1, 0));
-        $action = new ClickAction();
-        $action->setActionType(ClickAction::TYPE_ACTIVITY);
-        $mess->setAction($action);
+        if (is_array($behaviour) && isset($behaviour[0])) {
+            $action = new ClickAction();
+            $action->setActionType($behaviour[0]);
+            switch ($behaviour[1]) {
+                case 1:
+                    $action->setActivity($behaviour[1]);
+                    break;
+                case 2:
+                    $action->setUrl($behaviour[1]);
+                    break;
+                case 3:
+                    $action->setIntent($behaviour[1]);
+                    break;
+            }
+            $mess->setAction($action);
+        }
+        $mess->setCustom($customData);
         $ret = $push->PushSingleAccount(0, $account, $mess);
         return $ret;
     }
 
     /**
-     * 使用默认设置推送消息给单个ios版账户
+     * 推送消息给单个 iOS 账户
+     *
+     * @param string $accessId
+     * @param string $secretKey
+     * @param string $account 目标账户
+     * @param string $title 推送标题
+     * @param string $content 推送内容
+     * @param array  $customData 自定义数据，传入 key => value 形式的关联数组
+     * @param int    $environment App 环境，默认为开发环境，传入 XingeApp::IOSENV_PROD 为发布环境
+     * @return array|mixed
      */
-    public static function PushAccountIos($accessId, $secretKey, $content, $account, $environment) {
+    public static function PushAccountIos($accessId, $secretKey, $account, $title, $content,
+                                          $customData = [], $environment = XingeApp::IOSENV_DEV) {
         $push = new XingeApp($accessId, $secretKey);
         $mess = new MessageIOS();
-        $mess->setAlert($content);
+        $mess->setAlert(['title' => $title, 'body' => $content]);
+        $mess->setBadge(1);
+        $mess->setCustom($customData);
         $ret = $push->PushSingleAccount(0, $account, $mess, $environment);
         return $ret;
     }
 
     /**
-     * 使用默认设置推送消息给所有设备android版
+     * 推送消息给所有 Android 设备
+     *
+     * @param string $accessId
+     * @param string $secretKey
+     * @param string $title 推送标题
+     * @param string $content 推送内容
+     * @param array  $behaviour 点击通知行为，默认打开 App。传入长度为 2 的数组。元素 0 为行为，元素 1 为行为目标数据，如：
+     * 打开指定 Activity 传入 [ClickAction::TYPE_ACTIVITY, 'com.example.MyActivityClassName']
+     * 打开指定 URL 传入 [ClickAction::TYPE_URL, 'http://example.com']
+     * 打开 Intent 传入 [ClickAction::TYPE_INTENT, 'xgscheme://com.xg.push/notify_detail']（自定义协议）
+     * @param array  $customData 自定义数据，传入 key => value 形式的关联数组
+     * @return array|mixed
      */
-    public static function PushAllAndroid($accessId, $secretKey, $title, $content) {
+    public static function PushAllAndroid($accessId, $secretKey, $title, $content,
+                                          $behaviour = [ClickAction::TYPE_ACTIVITY, null], $customData = []) {
         $push = new XingeApp($accessId, $secretKey);
         $mess = new Message();
         $mess->setTitle($title);
         $mess->setContent($content);
         $mess->setType(Message::TYPE_NOTIFICATION);
         $mess->setStyle(new Style(0, 1, 1, 1, 0));
-        $action = new ClickAction();
-        $action->setActionType(ClickAction::TYPE_ACTIVITY);
-        $mess->setAction($action);
-        $ret = $push->PushAllDevices(0, $mess);
+        if (is_array($behaviour) && isset($behaviour[0])) {
+            $action = new ClickAction();
+            $action->setActionType($behaviour[0]);
+            switch ($behaviour[1]) {
+                case 1:
+                    $action->setActivity($behaviour[1]);
+                    break;
+                case 2:
+                    $action->setUrl($behaviour[1]);
+                    break;
+                case 3:
+                    $action->setIntent($behaviour[1]);
+                    break;
+            }
+            $mess->setAction($action);
+        }
+        $mess->setCustom($customData);
+        $ret = $push->PushAllDevices(XingeApp::DEVICE_ANDROID, $mess);
         return $ret;
     }
 
     /**
-     * 使用默认设置推送消息给所有设备ios版
+     * 推送消息给所有 iOS 设备
+     *
+     * @param string $accessId
+     * @param string $secretKey
+     * @param string $title 推送标题
+     * @param string $content 推送内容
+     * @param array  $customData 自定义数据，传入 key => value 形式的关联数组
+     * @param int    $environment App 环境，默认为开发环境，传入 XingeApp::IOSENV_PROD 为发布环境
+     * @return array|mixed
      */
-    public static function PushAllIos($accessId, $secretKey, $content, $environment) {
+    public static function PushAllIos($accessId, $secretKey, $title = '', $content, $customData = [],
+                                      $environment = XingeApp::IOSENV_DEV) {
         $push = new XingeApp($accessId, $secretKey);
         $mess = new MessageIOS();
-        $mess->setAlert($content);
-        $ret = $push->PushAllDevices(0, $mess, $environment);
+        $mess->setAlert(['title' => $title, 'body' => $content]);
+        $mess->setBadge(1);
+        $mess->setCustom($customData);
+        $ret = $push->PushAllDevices(XingeApp::DEVICE_IOS, $mess, $environment);
         return $ret;
     }
 
@@ -176,6 +253,12 @@ class XingeApp {
 
     /**
      * 推送消息给单个账户
+     *
+     * @param int    $deviceType 设备类型
+     * @param string $account 目标账户
+     * @param object $message 消息体
+     * @param int    $environment App 环境（仅 iOS），默认为 0，为 1 或 2 时分别是发布环境和开发环境
+     * @return array|mixed
      */
     public function PushSingleAccount($deviceType, $account, $message, $environment = 0) {
         $ret = array('ret_code' => -1);
@@ -268,7 +351,12 @@ class XingeApp {
     }
 
     /**
-     * 推送消息给APP所有设备
+     * 推送消息给所有设备
+     *
+     * @param int    $deviceType 设备类型
+     * @param object $message 消息体
+     * @param int    $environment App 环境（仅 iOS），默认为 0，为 1 或 2 时分别是发布环境和开发环境
+     * @return array|mixed
      */
     public function PushAllDevices($deviceType, $message, $environment = 0) {
         $ret = array('ret_code' => -1, 'err_msg' => 'message not valid');
@@ -406,7 +494,7 @@ class XingeApp {
      * 按帐号大批量推送
      */
     public function PushAccountListMultiple($pushId, $accountList) {
-//        $pushId = intval($pushId);
+        //        $pushId = intval($pushId);
         $ret = array('ret_code' => -1);
         if ($pushId <= 0) {
             $ret['err_msg'] = 'pushId not valid';
@@ -429,7 +517,7 @@ class XingeApp {
      * 按Token大批量推送
      */
     public function PushDeviceListMultiple($pushId, $deviceList) {
-//        $pushId = intval($pushId);
+        //        $pushId = intval($pushId);
         $ret = array('ret_code' => -1);
         if ($pushId <= 0) {
             $ret['err_msg'] = 'pushId not valid';
@@ -909,7 +997,7 @@ class Message {
         if (isset($this->m_sendTime)) {
             if (strtotime($this->m_sendTime) === false) return false;
         } else {
-            $this->m_sendTime = "2013-12-19 17:49:00";
+            $this->m_sendTime = "2018-06-01 00:00:00";
         }
 
         foreach ($this->m_acceptTimes as $value) {
@@ -945,8 +1033,6 @@ class Message {
         return true;
     }
 
-    private $m_title;
-    private $m_content;
     private $m_expireTime;
     private $m_sendTime;
     private $m_acceptTimes;
@@ -1087,7 +1173,7 @@ class MessageIOS {
         if (isset($this->m_sendTime)) {
             if (strtotime($this->m_sendTime) === false) return false;
         } else {
-            $this->m_sendTime = "2014-03-13 12:00:00";
+            $this->m_sendTime = "2018-06-01 00:00:00";
         }
 
         if (!empty($this->m_raw)) {
@@ -1147,6 +1233,8 @@ class MessageIOS {
     private $m_expireTime;
     private $m_sendTime;
     private $m_acceptTimes;
+    private $m_titile;
+    private $m_content;
     private $m_custom;
     private $m_raw;
     private $m_type;
@@ -1293,7 +1381,8 @@ class ClickAction {
 }
 
 class Style {
-    public function __construct($builderId, $ring = 0, $vibrate = 0, $clearable = 1, $nId = 0, $lights = 1, $iconType = 0, $styleId = 1) {
+    public function __construct($builderId, $ring = 0, $vibrate = 0, $clearable = 1, $nId = 0, $lights = 1,
+                                $iconType = 0, $styleId = 1) {
         $this->m_builderId = $builderId;
         $this->m_ring = $ring;
         $this->m_vibrate = $vibrate;
