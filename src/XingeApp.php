@@ -85,7 +85,7 @@ class XingeApp {
         if (is_array($behaviour) && isset($behaviour[0])) {
             $action = new ClickAction();
             $action->setActionType($behaviour[0]);
-            switch ($behaviour[1]) {
+            switch ($behaviour[0]) {
                 case 1:
                     $action->setActivity($behaviour[1]);
                     break;
@@ -95,11 +95,14 @@ class XingeApp {
                 case 3:
                     $action->setIntent($behaviour[1]);
                     break;
+                default:
+                    $action->setActionType(ClickAction::TYPE_ACTIVITY);
+                    $action->setActivity(null);
             }
             $mess->setAction($action);
         }
         $mess->setCustom($customData);
-        $ret = $push->PushSingleAccount(0, $account, $mess);
+        $ret = $push->PushSingleAccount(XingeApp::DEVICE_ANDROID, $account, $mess);
         return $ret;
     }
 
@@ -122,7 +125,7 @@ class XingeApp {
         $mess->setAlert(['title' => $title, 'body' => $content]);
         $mess->setBadge(1);
         $mess->setCustom($customData);
-        $ret = $push->PushSingleAccount(0, $account, $mess, $environment);
+        $ret = $push->PushSingleAccount(XingeApp::DEVICE_IOS, $account, $mess, $environment);
         return $ret;
     }
 
@@ -151,7 +154,7 @@ class XingeApp {
         if (is_array($behaviour) && isset($behaviour[0])) {
             $action = new ClickAction();
             $action->setActionType($behaviour[0]);
-            switch ($behaviour[1]) {
+            switch ($behaviour[0]) {
                 case 1:
                     $action->setActivity($behaviour[1]);
                     break;
@@ -161,11 +164,14 @@ class XingeApp {
                 case 3:
                     $action->setIntent($behaviour[1]);
                     break;
+                default:
+                    $action->setActionType(ClickAction::TYPE_ACTIVITY);
+                    $action->setActivity(null);
             }
             $mess->setAction($action);
         }
         $mess->setCustom($customData);
-        $ret = $push->PushAllDevices(XingeApp::DEVICE_ANDROID, $mess);
+        $ret = $push->PushAllDevices(0, $mess);
         return $ret;
     }
 
@@ -187,7 +193,7 @@ class XingeApp {
         $mess->setAlert(['title' => $title, 'body' => $content]);
         $mess->setBadge(1);
         $mess->setCustom($customData);
-        $ret = $push->PushAllDevices(XingeApp::DEVICE_IOS, $mess, $environment);
+        $ret = $push->PushAllDevices(0, $mess, $environment);
         return $ret;
     }
 
@@ -300,7 +306,7 @@ class XingeApp {
         $params['message'] = $message->toJson();
         $params['timestamp'] = time();
         $params['environment'] = $environment;
-
+        //var_dump($params);
         return $this->callRestful(self::RESTAPI_PUSHSINGLEACCOUNT, $params);
     }
 
@@ -395,7 +401,6 @@ class XingeApp {
             $params['loop_times'] = $message->getLoopTimes();
         }
         //var_dump($params);
-
         return $this->callRestful(self::RESTAPI_PUSHALLDEVICE, $params);
     }
 
@@ -1146,7 +1151,7 @@ class MessageIOS {
 
     public function toJson() {
         if (!empty($this->m_raw)) return $this->m_raw;
-        $ret = $this->m_custom;
+        $ret['custom'] = $this->m_custom;
         $ret['accept_time'] = $this->acceptTimeToJson();
 
         $aps = array();
@@ -1225,7 +1230,6 @@ class MessageIOS {
                 return false;
             }
         }
-
         return true;
     }
 
