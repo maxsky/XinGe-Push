@@ -36,11 +36,11 @@ class XingeApp {
     /**
      * 使用默认设置推送消息给单个 Android 设备
      *
-     * @param $appId
-     * @param $secretKey
-     * @param $title 推送标题
-     * @param $content 推送内容
-     * @param $token 设备 Token
+     * @param string $appId
+     * @param string $secretKey
+     * @param string $title 推送标题
+     * @param string $content 推送内容
+     * @param string $token 设备 Token
      *
      * @return mixed
      */
@@ -61,15 +61,15 @@ class XingeApp {
     /**
      * 使用默认设置推送消息给单个 iOS 设备
      *
-     * @param $appId
-     * @param $secretKey
-     * @param $content 推送内容
-     * @param $token 设备 Token
-     * @param $environment 推送环境，开发：XingeApp::IOSENV_DEV；正式：XingeApp::IOSENV_PROD
+     * @param string $appId
+     * @param string $secretKey
+     * @param string $content 推送内容
+     * @param string $token 设备 Token
+     * @param string $environment 推送环境，开发：XingeApp::IOSENV_DEV；正式：XingeApp::IOSENV_PROD
      *
      * @return mixed
      */
-    public static function PushTokenIos($appId, $secretKey, $content, $token, $environment) {
+    public static function PushTokenIos($appId, $secretKey, $content, $token, $environment = XingeApp::IOSENV_DEV) {
         $push = new XingeApp($appId, $secretKey);
         $mess = new MessageIOS();
         $mess->setAlert($content);
@@ -126,7 +126,7 @@ class XingeApp {
     }
 
     /**
-     * 使用默认设置推送消息给单个 iOS 账户
+     *推送消息给单个 iOS 账户
      *
      * @param string $appId
      * @param string $secretKey
@@ -138,7 +138,8 @@ class XingeApp {
      *
      * @return mixed
      */
-    public static function PushAccountIos($appId, $secretKey, $account, $title, $content, $customData = [], $environment = XingeApp::IOSENV_DEV) {
+    public static function PushAccountIos($appId, $secretKey, $account, $title, $content,
+                                          $customData = [], $environment = XingeApp::IOSENV_DEV) {
         $push = new XingeApp($appId, $secretKey);
         $mess = new MessageIOS();
         $mess->setAlert(['title' => $title, 'body' => $content]);
@@ -148,16 +149,23 @@ class XingeApp {
     }
 
     /**
-     * 使用默认设置推送消息给所有 Android 设备
+     * 推送消息给所有 Android 设备
      *
-     * @param $appId
-     * @param $secretKey
-     * @param $title 推送标题
-     * @param $content 推送内容
+     * @param string $appId
+     * @param string $secretKey
+     * @param string $title 推送标题
+     * @param string $content 推送内容
+     * @param array  $behaviour 点击通知行为
+     *               默认打开 App。传入长度为 2 的数组。元素 0 为行为，元素 1 为行为目标数据，如：
+     *               打开指定 Activity 传入 [ClickAction::TYPE_ACTIVITY, 'com.example.MyActivityClassName']
+     *               打开指定 URL 传入 [ClickAction::TYPE_URL, 'http://example.com']
+     *               打开 Intent 传入 [ClickAction::TYPE_INTENT, 'xgscheme://com.xg.push/notify_detail']（自定义协议）
+     * @param array  $customData 自定义数据，传入 key => value 形式的关联数组
      *
      * @return mixed
      */
-    public static function PushAllAndroid($appId, $secretKey, $title, $content) {
+    public static function PushAllAndroid($appId, $secretKey, $title, $content,
+                                          $behaviour = [ClickAction::TYPE_ACTIVITY, null], $customData = []) {
         $push = new XingeApp($appId, $secretKey);
         $mess = new Message();
         $mess->setTitle($title);
@@ -165,26 +173,45 @@ class XingeApp {
         $mess->setType(Message::TYPE_NOTIFICATION);
         $mess->setStyle(new Style(0, 1, 1, 1, 0));
         $action = new ClickAction();
-        $action->setActionType(ClickAction::TYPE_ACTIVITY);
+        if (is_array($behaviour) && isset($behaviour[0])) {
+            $action = new ClickAction();
+            switch ($behaviour[0]) {
+                case 1:
+                    $action->setActivity($behaviour[1]);
+                    break;
+                case 2:
+                    $action->setUrl($behaviour[1]);
+                    break;
+                case 3:
+                    $action->setIntent($behaviour[1]);
+                    break;
+                default:
+            }
+        }
         $mess->setAction($action);
+        $mess->setCustom($customData);
         $ret = $push->PushAllDevices($mess);
         return $ret;
     }
 
     /**
-     * 使用默认设置推送消息给所有 iOS 设备
+     * 推送消息给所有 iOS 设备
      *
-     * @param $appId
-     * @param $secretKey
-     * @param $content 推送内容
-     * @param $environment 推送环境，开发：XingeApp::IOSENV_DEV；正式：XingeApp::IOSENV_PROD
+     * @param string $appId
+     * @param string $secretKey
+     * @param string $title 推送标题
+     * @param string $content 推送内容
+     * @param array  $customData 自定义数据，传入 key => value 形式的关联数组
+     * @param string $environment 推送环境，开发：XingeApp::IOSENV_DEV；正式：XingeApp::IOSENV_PROD
      *
      * @return mixed
      */
-    public static function PushAllIos($appId, $secretKey, $content, $environment) {
+    public static function PushAllIos($appId, $secretKey, $title, $content,
+                                      $customData = [], $environment = XingeApp::IOSENV_DEV) {
         $push = new XingeApp($appId, $secretKey);
         $mess = new MessageIOS();
-        $mess->setAlert($content);
+        $mess->setAlert(['title' => $title, 'body' => $content]);
+        $mess->setCustom($customData);
         $ret = $push->PushAllDevices($mess, $environment);
         return $ret;
     }
@@ -192,11 +219,11 @@ class XingeApp {
     /**
      * 使用默认设置推送消息给标签选中 Android 设备
      *
-     * @param $appId
-     * @param $secretKey
-     * @param $title
-     * @param $content
-     * @param $tag
+     * @param string $appId
+     * @param string $secretKey
+     * @param string $title
+     * @param string $content
+     * @param string $tag
      *
      * @return mixed
      */
@@ -217,15 +244,15 @@ class XingeApp {
     /**
      * 使用默认设置推送消息给标签选中 iOS 设备
      *
-     * @param $appId
-     * @param $secretKey
-     * @param $content
-     * @param $tag
-     * @param $environment
+     * @param string $appId
+     * @param string $secretKey
+     * @param string $content
+     * @param string $tag
+     * @param string $environment
      *
      * @return mixed
      */
-    public static function PushTagIos($appId, $secretKey, $content, $tag, $environment) {
+    public static function PushTagIos($appId, $secretKey, $content, $tag, $environment = XingeApp::IOSENV_DEV) {
         $push = new XingeApp($appId, $secretKey);
         $mess = new MessageIOS();
         $mess->setAlert($content);
