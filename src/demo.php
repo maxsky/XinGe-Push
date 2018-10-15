@@ -1,8 +1,7 @@
 <?php
+require_once 'XingeApp.php';
 
-namespace XinGe;
-
-var_dump(DemoPushSingleDeviceNotification());
+// var_dump(DemoPushSingleDeviceNotification());
 // var_dump(DemoPushSingleDeviceMessage());
 // var_dump(DemoPushSingleDeviceIOS());
 // var_dump(DemoPushSingleAccount());
@@ -25,15 +24,19 @@ var_dump(DemoPushSingleDeviceNotification());
 // var_dump(DemoDeleteTokenOfAccount());
 // var_dump(DemoDeleteAllTokensOfAccount());
 
+$appId = 'appId';
+$secretKey = 'secretKey';
+$accessId = 'accessId';
+
 //单个设备下发通知消息
 function DemoPushSingleDeviceNotification() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey);
     $mess = new Message();
     $mess->setType(Message::TYPE_NOTIFICATION);
     $mess->setTitle("title");
     $mess->setContent("中午");
     $mess->setExpireTime(86400);
-    //$style = new Style(0);
+    $mess->setSendTime(date('Y-m-d H:i:s'));
     #含义：样式编号0，响铃，震动，不可从通知栏清除，不影响先前通知
     $style = new Style(0, 1, 1, 0, 0);
     $action = new ClickAction();
@@ -53,10 +56,12 @@ function DemoPushSingleDeviceNotification() {
 
 //单个设备下发透传消息       注：透传消息默认不展示
 function DemoPushSingleDeviceMessage() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey);
     $mess = new Message();
     $mess->setTitle('title');
     $mess->setContent('content');
+    $mess->setExpireTime(86400);
+    $mess->setSendTime(date('Y-m-d H:i:s'));
     $mess->setType(Message::TYPE_MESSAGE);
     $ret = $push->PushSingleDevice('token', $mess);
     return $ret;
@@ -64,11 +69,13 @@ function DemoPushSingleDeviceMessage() {
 
 //下发IOS设备消息
 function DemoPushSingleDeviceIOS() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp('88311062e1e79', '66ddd9c5913269c2d4c9659328db29b7');
     $mess = new MessageIOS();
+    $mess->setType(MessageIOS::TYPE_APNS_NOTIFICATION);
+    $mess->setTitle('title');
+    $mess->setContent('content');
     $mess->setExpireTime(86400);
-    //$mess->setSendTime("2014-03-13 16:00:00");
-    $mess->setAlert("ios test");
+    $mess->setSendTime(date('Y-m-d H:i:s'));
     //$mess->setAlert(array('key1'=>'value1'));
     $mess->setBadge(1);
     $mess->setSound("beep.wav");
@@ -76,65 +83,48 @@ function DemoPushSingleDeviceIOS() {
     $mess->setCustom($custom);
     $acceptTime = new TimeInterval(0, 0, 23, 59);
     $mess->addAcceptTime($acceptTime);
-    $raw = '{"xg_max_payload":1,"accept_time":[{"start":{"hour":"20","min":"0"},"end":{"hour":"23","min":"59"}}],"aps":{"alert":"="}}';
-    $mess->setRaw($raw);
+    // $raw = '{"xg_max_payload":1,"accept_time":[{"start":{"hour":"20","min":"0"},"end":{"hour":"23","min":"59"}}],"aps":{"alert":"="}}';
+    // $mess->setRaw($raw);
     $ret = $push->PushSingleDevice('token', $mess, XingeApp::IOSENV_DEV);
     return $ret;
 }
 
-//单个设备下发通知Intent
-//setIntent()的内容需要使用intent.toUri(Intent.URI_INTENT_SCHEME)方法来得到序列化后的Intent(自定义参数也包含在Intent内）
-//终端收到后通过intent.parseUri()来反序列化得到Intent
-function DemoPushSingleDeviceNotificationIntent() {
-    $push = new XingeApp(000, 'secret_key');
-    $mess = new Message();
-    $mess->setExpireTime(86400);
-    $mess->setType(Message::TYPE_NOTIFICATION);
-    $mess->setTitle("title");
-    $mess->setContent("通知点击执行Intent测试");
-    $style = new Style(0);
-    $style = new Style(0, 1, 1, 0);
-    $action = new ClickAction();
-    $action->setActionType(ClickAction::TYPE_INTENT);
-    $action->setIntent('intent:10086#Intent;scheme=tel;action=android.intent.action.DIAL;S.key=value;end');
-    $mess->setStyle($style);
-    $mess->setAction($action);
-    $ret = $push->PushSingleDevice('token', $mess);
-    return ($ret);
-}
-
-
 //下发单个账号
 function DemoPushSingleAccount() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey);
     $mess = new Message();
+    $mess->setType(Message::TYPE_NOTIFICATION);
+    $mess->setTitle("title");
+    $mess->setContent("中午");
     $mess->setExpireTime(86400);
-    $mess->setTitle('title');
-    $mess->setContent('content');
-    $mess->setType(Message::TYPE_MESSAGE);
-    $ret = $push->PushSingleAccount(0, 'joelliu', $mess);
+    $mess->setSendTime(date('Y-m-d H:i:s'));
+    $ret = $push->PushSingleAccount('joelliu', $mess);
     return ($ret);
 }
 
 //下发多个账号， IOS下发多个账号参考DemoPushSingleAccountIOS进行相应修改
 function DemoPushAccountList() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey);
     $mess = new Message();
+    $mess->setType(Message::TYPE_NOTIFICATION);
+    $mess->setTitle("title");
+    $mess->setContent("中午");
     $mess->setExpireTime(86400);
-    $mess->setTitle('title');
-    $mess->setContent('content');
-    $mess->setType(Message::TYPE_MESSAGE);
-    $accountList = array('joelliu');
-    $ret = $push->PushAccountList(0, $accountList, $mess);
+    $mess->setSendTime(date('Y-m-d H:i:s'));
+    $accountList = array('joelliu', 'hoepeng');
+    $ret = $push->PushAccountList($accountList, $mess);
     return ($ret);
 }
 
 //下发IOS账号消息
 function DemoPushSingleAccountIOS() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp('88311062e1e79', '66ddd9c5913269c2d4c9659328db29b7');
     $mess = new MessageIOS();
+    $mess->setType(MessageIOS::TYPE_APNS_NOTIFICATION);
+    $mess->setTitle('title');
+    $mess->setContent('content');
     $mess->setExpireTime(86400);
-    $mess->setAlert("ios test");
+    $mess->setSendTime(date('Y-m-d H:i:s'));
     //$mess->setAlert(array('key1'=>'value1'));
     $mess->setBadge(1);
     $mess->setSound("beep.wav");
@@ -142,19 +132,19 @@ function DemoPushSingleAccountIOS() {
     $mess->setCustom($custom);
     $acceptTime1 = new TimeInterval(0, 0, 23, 59);
     $mess->addAcceptTime($acceptTime1);
-    $ret = $push->PushSingleAccount(0, 'joelliu', $mess, XingeApp::IOSENV_DEV);
+    $ret = $push->PushSingleAccount('joelliu', $mess, XingeApp::IOSENV_DEV);
     return $ret;
 }
 
 //下发所有设备
 function DemoPushAllDevices() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey);
     $mess = new Message();
     $mess->setType(Message::TYPE_NOTIFICATION);
     $mess->setTitle("title");
     $mess->setContent("中午");
     $mess->setExpireTime(86400);
-    $style = new Style(0);
+    $mess->setSendTime(date('Y-m-d H:i:s'));
     #含义：样式编号0，响铃，震动，不可从通知栏清除，不影响先前通知
     $style = new Style(0, 1, 1, 0, 0);
     $action = new ClickAction();
@@ -164,27 +154,29 @@ function DemoPushAllDevices() {
     $action->setComfirmOnUrl(1);
     $mess->setStyle($style);
     $mess->setAction($action);
-
-    $ret = $push->PushAllDevices(0, $mess);
+    $acceptTime1 = new TimeInterval(0, 0, 23, 59);
+    $mess->addAcceptTime($acceptTime1);
+    $ret = $push->PushAllDevices($mess);
     return ($ret);
 }
 
 //下发标签选中设备
 function DemoPushTags() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey);
     $mess = new Message();
+    $mess->setType(Message::TYPE_NOTIFICATION);
+    $mess->setTitle("title");
+    $mess->setContent("中午");
     $mess->setExpireTime(86400);
-    $mess->setTitle('title');
-    $mess->setContent('content');
-    $mess->setType(Message::TYPE_MESSAGE);
-    $tagList = array('Demo3');
-    $ret = $push->PushTags(0, $tagList, 'OR', $mess);
+    $mess->setSendTime(date('Y-m-d H:i:s'));
+    $tagList = array('Demo3', 'Demo2');
+    $ret = $push->PushTags($tagList, 'OR', $mess);
     return ($ret);
 }
 
 //查询消息推送状态
 function DemoQueryPushStatus() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $pushIdList = array('31', '32');
     $ret = $push->QueryPushStatus($pushIdList);
     return ($ret);
@@ -192,35 +184,35 @@ function DemoQueryPushStatus() {
 
 //查询设备数量
 function DemoQueryDeviceCount() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->QueryDeviceCount();
     return ($ret);
 }
 
 //查询标签
 function DemoQueryTags() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->QueryTags(0, 100);
     return ($ret);
 }
 
 //查询某个tag下token的数量
 function DemoQueryTagTokenNum() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->QueryTagTokenNum("tag");
     return ($ret);
 }
 
 //查询某个token的标签
 function DemoQueryTokenTags() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->QueryTokenTags("token");
     return ($ret);
 }
 
 //取消定时任务
 function DemoCancelTimingPush() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->CancelTimingPush("32");
     return ($ret);
 }
@@ -232,7 +224,7 @@ function DemoBatchSetTag() {
     array_push($pairs, new TagTokenPair("tag1", "token00000000000000000000000000000000001"));
     array_push($pairs, new TagTokenPair("tag1", "token00000000000000000000000000000000001"));
 
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->BatchSetTag($pairs);
     return $ret;
 }
@@ -244,72 +236,28 @@ function DemoBatchDelTag() {
     array_push($pairs, new TagTokenPair("tag1", "token00000000000000000000000000000000001"));
     array_push($pairs, new TagTokenPair("tag1", "token00000000000000000000000000000000001"));
 
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->BatchDelTag($pairs);
     return $ret;
 }
 
-//大批量下发给账号 android
-//iOS 请构建MessageIOS 消息
-function DemoPushAccountListMultipleNotification() {
-    $push = new XingeApp(000, 'secret_key');
-    $mess = new Message();
-    $mess->setExpireTime(86400);
-    $mess->setTitle('title');
-    $mess->setContent('content');
-    $mess->setType(Message::TYPE_NOTIFICATION);
-    $ret = $push->CreateMultipush($mess, XingeApp::IOSENV_DEV);
-    if (!($ret['ret_code'] === 0))
-        return $ret;
-    else {
-        $result = array();
-        $accountList1 = array('joelliu', 'joelliu2', 'joelliu3');
-        array_push($result, $push->PushAccountListMultiple($ret['result']['push_id'], $accountList1));
-        $accountList2 = array('joelliu4', 'joelliu5', 'joelliu6');
-        array_push($result, $push->PushAccountListMultiple($ret['result']['push_id'], $accountList2));
-        return ($result);
-    }
-}
-
-//大批量下发给设备 android
-//iOS 请构建MessageIOS 消息
-function DemoPushDeviceListMultipleNotification() {
-    $push = new XingeApp(000, 'secret_key');
-    $mess = new Message();
-    $mess->setExpireTime(86400);
-    $mess->setTitle('title');
-    $mess->setContent('content');
-    $mess->setType(Message::TYPE_NOTIFICATION);
-    $ret = $push->CreateMultipush($mess, XingeApp::IOSENV_DEV);
-    if (!($ret['ret_code'] === 0))
-        return $ret;
-    else {
-        $result = array();
-        $deviceList1 = array('token1', 'token2', 'token3');
-        array_push($result, $push->PushDeviceListMultiple($ret['result']['push_id'], $deviceList1));
-        $deviceList2 = array('token4', 'token5', 'token6');
-        array_push($result, $push->PushDeviceListMultiple($ret['result']['push_id'], $deviceList2));
-        return ($result);
-    }
-}
-
 //查询某个token的信息
 function DemoQueryInfoOfToken() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->QueryInfoOfToken("token");
     return ($ret);
 }
 
 //查询某个account绑定的token
 function DemoQueryTokensOfAccount() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->QueryTokensOfAccount("nickName");
     return ($ret);
 }
 
 //删除某个account绑定的所有token
 function DemoDeleteAllTokensOfAccount() {
-    $push = new XingeApp(000, 'secret_key');
+    $push = new XingeApp($appId, $secretKey, $accessId);
     $ret = $push->DeleteAllTokensOfAccount("nickName");
     return ($ret);
 }
