@@ -1717,10 +1717,11 @@ class RequestBase {
 
         //默认配置
         $curl_conf = array(
-            CURLOPT_URL => $url, //请求url
-            CURLOPT_HEADER => false, //不输出头信息
-            CURLOPT_RETURNTRANSFER => true, //不输出返回数据
-            CURLOPT_CONNECTTIMEOUT => 3, // 连接超时时间
+            CURLOPT_URL => $url,             // 请求url
+            CURLOPT_HEADER => false,         // 不输出头信息
+            CURLOPT_RETURNTRANSFER => true,  // 不输出返回数据
+            CURLOPT_CONNECTTIMEOUT => 3,     // 连接超时时间
+            CURLOPT_SSL_VERIFYPEER => false, // 不验证对等证书
         );
 
         //配置post请求额外需要的配置项
