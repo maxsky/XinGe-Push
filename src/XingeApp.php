@@ -102,16 +102,20 @@ class XingeApp {
         $mess->setTitle($title);
         $mess->setContent($content);
         $mess->setType(Message::TYPE_NOTIFICATION);
-        $mess->setStyle(new Style(0, 1, 1, 1, 0));
+        $mess->setStyle(new Style(0, 1, 1));
         $action = new ClickAction();
         if (is_array($behaviour) && isset($behaviour[0])) {
             $action = new ClickAction();
+            $action->setActionType($behaviour[0]);
             switch ($behaviour[0]) {
                 case 1:
                     $action->setActivity($behaviour[1]);
+                    $action->setAtyAttrIntentFlag(0);
+                    $action->setAtyAttrPendingIntentFlag(0);
                     break;
                 case 2:
                     $action->setUrl($behaviour[1]);
+                    $action->setComfirmOnUrl(0);
                     break;
                 case 3:
                     $action->setIntent($behaviour[1]);
