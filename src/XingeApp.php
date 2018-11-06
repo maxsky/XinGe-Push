@@ -103,6 +103,8 @@ class XingeApp {
         $mess->setContent($content);
         $mess->setType(Message::TYPE_NOTIFICATION);
         $mess->setStyle(new Style(0, 1, 1));
+        $mess->addAcceptTime(new TimeInterval(0, 0, 23, 59));
+        $mess->setExpireTime(259200);
         $action = new ClickAction();
         if (is_array($behaviour) && isset($behaviour[0])) {
             $action = new ClickAction();
@@ -851,7 +853,7 @@ class TagTokenPair {
 class Message {
 
     public function __construct() {
-        $this->m_acceptTimes = array();
+        $this->m_acceptTimes = [];
         $this->m_multiPkg = 0;
         $this->m_raw = "";
         $this->m_style = new Style(0);
@@ -891,6 +893,7 @@ class Message {
 
     public function acceptTimeToJson() {
         $ret = array();
+        /** @var TimeInterval $acceptTime */
         foreach ($this->m_acceptTimes as $acceptTime) {
             $ret[] = $acceptTime->toArray();
         }
@@ -1038,7 +1041,7 @@ class Message {
             }
 
         } else {
-            $this->m_sendTime = "2013-12-19 17:49:00";
+            $this->m_sendTime = "2017-12-01 00:00:00";
         }
 
         foreach ($this->m_acceptTimes as $value) {
@@ -1136,6 +1139,7 @@ class MessageIOS {
 
     public function acceptTimeToJson() {
         $ret = array();
+        /** @var TimeInterval $acceptTime */
         foreach ($this->m_acceptTimes as $acceptTime) {
             $ret[] = $acceptTime->toArray();
         }
@@ -1243,7 +1247,7 @@ class MessageIOS {
             }
 
         } else {
-            $this->m_sendTime = "2014-03-13 12:00:00";
+            $this->m_sendTime = "2017-12-01 00:00:00";
         }
 
         if (!empty($this->m_raw)) {
@@ -1724,8 +1728,9 @@ class RequestBase {
             CURLOPT_URL => $url,             // 请求url
             CURLOPT_HEADER => false,         // 不输出头信息
             CURLOPT_RETURNTRANSFER => true,  // 不输出返回数据
-            CURLOPT_CONNECTTIMEOUT => 3,     // 连接超时时间
+            CURLOPT_CONNECTTIMEOUT => 10,    // 连接超时时间
             CURLOPT_SSL_VERIFYPEER => false, // 不验证对等证书
+            CURLOPT_SSL_VERIFYHOST => 0,     // 不验证域名
         );
 
         //配置post请求额外需要的配置项
