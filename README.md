@@ -1,5 +1,7 @@
 # xinge-api-php
 
+<a href="https://996.icu"><img src="https://img.shields.io/badge/link-996.icu-red.svg"></a>
+
 Composer 安装：`composer require maxsky/xg-push`
 ## 概述
 [信鸽](http://xg.qq.com) 是腾讯云提供的一款支持**百亿级**消息的移动 App 推送平台，开发者可以调用 PHP SDK 访问信鸽推送服务。
