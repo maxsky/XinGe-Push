@@ -5,13 +5,22 @@
     "authors": [
         {
             "name": "Max Sky",
-            "email": "admin@maxsky.cc"
+            "email": "max940213@live.com"
         }
     ],
-    "minimum-stability": "stable",
+    "require": {
+         "ext-curl": "*",
+         "ext-json": "*"
+    },
     "autoload": {
         "psr-4": {
-            "XinGe\\": "src"
+            "Tencent\\XinGe\\": "src"
         }
-    }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
+    },
+    "minimum-stability": "stable"
 }
