@@ -35,7 +35,7 @@ class iOSMsg {
     /** @var array 标题与内容 */
     private $m_alert;
     /** @var string|array */
-    private $m_mediaResources;
+//    private $m_mediaResources;
     /** @var array 推送时间段，小于 10 个 */
     private $m_acceptTimes;
 
@@ -120,9 +120,9 @@ class iOSMsg {
     /**
      * @param array|string $mediaResources
      */
-    public function setMediaResources($mediaResources) {
-        $this->m_mediaResources = $mediaResources;
-    }
+//    public function setMediaResources($mediaResources) {
+//        $this->m_mediaResources = $mediaResources;
+//    }
 
     /**
      * 设置通知标题、内容。格式 ['title' => '标题', 'body' => '内容']
