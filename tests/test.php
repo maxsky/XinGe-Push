@@ -38,10 +38,10 @@ function DemoPushSingleDeviceNotification() {
     $action->setUrl("http://xg.qq.com");
     #打开url需要用户确认
     $action->setConfirmOnUrl(1);
-    $custom = ['key1' => 'value1', 'key2' => 'value2'];
+    $customData = ['key1' => 'value1', 'key2' => 'value2'];
     $mess->setStyle($style);
     $mess->setAction($action);
-    $mess->setCustom($custom);
+    $mess->setCustomData($customData);
     $acceptTime1 = new TimeInterval(0, 0, 23, 59);
     $mess->addAcceptTime($acceptTime1);
     $ret = $push->PushSingleDevice('token', $mess);
@@ -73,8 +73,8 @@ function DemoPushSingleDeviceIOS() {
     //$mess->setAlert(array('key1'=>'value1'));
     $mess->setBadgeType(1);
     $mess->setSound("beep.wav");
-    $custom = ['key1' => 'value1', 'key2' => 'value2'];
-    $mess->setCustom($custom);
+    $customData = ['key1' => 'value1', 'key2' => 'value2'];
+    $mess->setCustomData($customData);
     $acceptTime = new TimeInterval(0, 0, 23, 59);
     $mess->addAcceptTime($acceptTime);
     // $raw = '{"xg_max_payload":1,"accept_time":[{"start":{"hour":"20","min":"0"},"end":{"hour":"23","min":"59"}}],"aps":{"alert":"="}}';
@@ -122,8 +122,8 @@ function DemoPushSingleAccountIOS() {
     //$mess->setAlert(array('key1'=>'value1'));
     $mess->setBadgeType(1);
     $mess->setSound("beep.wav");
-    $custom = ['key1' => 'value1', 'key2' => 'value2'];
-    $mess->setCustom($custom);
+    $customData = ['key1' => 'value1', 'key2' => 'value2'];
+    $mess->setCustomData($customData);
     $acceptTime1 = new TimeInterval(0, 0, 23, 59);
     $mess->addAcceptTime($acceptTime1);
     $ret = $push->PushSingleAccount('joelliu', $mess);
@@ -165,8 +165,8 @@ function DemoPushAllIOS() {
     //$mess->setAlert(array('key1'=>'value1'));
     $mess->setBadgeType(1);
     $mess->setSound("beep.wav");
-    $custom = ['key1' => 'value1', 'key2' => 'value2'];
-    $mess->setCustom($custom);
+    $customData = ['key1' => 'value1', 'key2' => 'value2'];
+    $mess->setCustomData($customData);
     $acceptTime1 = new TimeInterval(0, 0, 23, 59);
     $mess->addAcceptTime($acceptTime1);
     $ret = $push->PushAllDevices($mess);
@@ -178,6 +178,3 @@ function DemoQueryDeviceStatus() {
     $ret = $push->QueryDeviceStatus(['aaaaaaaaa', 'bbbbbbbbb'], '123456789');
     return $ret;
 }
-
-
-

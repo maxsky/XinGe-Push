@@ -36,7 +36,7 @@ class AndroidMsg {
     private $m_mediaResources;
     private $m_action;
     /** @var array 自定义数据 */
-    private $m_customContent;
+    private $m_customData;
 
     /*************** 信鸽可选参数 **************/
     /** @var int 消息离线存储时间（秒），默认 259200（72 小时） */
@@ -76,8 +76,16 @@ class AndroidMsg {
         $this->m_action = $action;
     }
 
-    public function setCustom($customContent) {
-        $this->m_customContent = $customContent;
+    public function getAction() {
+        return $this->m_action;
+    }
+
+    public function setCustomData($customData) {
+        $this->m_customData = $customData;
+    }
+
+    public function getCustomData() {
+        return $this->m_customData;
     }
 
     public function setRaw($raw) {
@@ -178,8 +186,8 @@ class AndroidMsg {
                 $ret['title'] = $this->m_title;
                 $ret['content'] = $this->m_content;
         }
-        if ($this->m_customContent) {
-            $ret['android']['custom_content'] = $this->m_customContent;
+        if ($this->m_customData) {
+            $ret['android']['custom_content'] = $this->m_customData;
         }
         $ret['accept_time'] = $this->acceptTimeToArray();
         return $ret;
@@ -239,7 +247,7 @@ class AndroidMsg {
             }
         }
 
-        if (!empty($this->m_customContent) && !is_array($this->m_customContent)) {
+        if (!empty($this->m_customData) && !is_array($this->m_customData)) {
             return false;
         }
 

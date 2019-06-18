@@ -48,6 +48,10 @@ class ClickAction {
         $this->m_actionType = $actionType;
     }
 
+    public function getActionType() {
+        return $this->m_actionType;
+    }
+
     public function setUrl($url) {
         $this->m_url = $url;
     }
@@ -62,6 +66,10 @@ class ClickAction {
 
     public function setIntent($intent) {
         $this->m_intent = $intent;
+    }
+
+    public function getIntent() {
+        return $this->m_intent;
     }
 
     public function setAtyAttrIntentFlag($atyAttrIntentFlag) {

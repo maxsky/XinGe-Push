@@ -15,7 +15,10 @@ class XingePush {
 
     const RESTAPI_PUSH = 'https://openapi.xg.qq.com/v3/push/app';
     const RESTAPI_TAG = 'https://openapi.xg.qq.com/v3/device/tag';
-    const RESTAPI_ACCOUNT = 'https://openapi.xg.qq.com/v3/device/account/batchoperate';
+    // 账号绑定与解绑
+    const RESTAPI_BIND_ACCOUNT = 'https://openapi.xg.qq.com/v3/device/account/batchoperate';
+    // 账号绑定查询
+    const RESTAPI_BIND_QUERY = 'https://openapi.xg.qq.com/v3/device/account/query';
 
     // 统计
 
@@ -84,6 +87,8 @@ class XingePush {
         if ($message instanceof AndroidMsg) {
             $params['platform'] = 'android'; // android：安卓；ios：苹果；all：安卓 & 苹果。仅支持全量推送和标签推送
             $params['multi_pkg'] = $message->getMultiPkg();
+            $action = $this->parseWithIntent($message->getAction(), $message->getCustomData());
+            $message->setAction($action);
         }
 
         if ($message instanceof iOSMsg) {
@@ -140,6 +145,8 @@ class XingePush {
         if ($message instanceof AndroidMsg) {
             $params['platform'] = 'android'; // android：安卓；ios：苹果；all：安卓 & 苹果。仅支持全量推送和标签推送
             $params['multi_pkg'] = $message->getMultiPkg();
+            $action = $this->parseWithIntent($message->getAction(), $message->getCustomData());
+            $message->setAction($action);
         }
 
         if ($message instanceof iOSMsg) {
@@ -195,6 +202,8 @@ class XingePush {
         if ($message instanceof AndroidMsg) {
             $params['platform'] = 'android'; // android：安卓；ios：苹果；all：安卓 & 苹果。仅支持全量推送和标签推送
             $params['multi_pkg'] = $message->getMultiPkg();
+            $action = $this->parseWithIntent($message->getAction(), $message->getCustomData());
+            $message->setAction($action);
         }
 
         if ($message instanceof iOSMsg) {
@@ -249,6 +258,8 @@ class XingePush {
         if ($message instanceof AndroidMsg) {
             $params['platform'] = 'android'; // android：安卓；ios：苹果；all：安卓 & 苹果。仅支持全量推送和标签推送
             $params['multi_pkg'] = $message->getMultiPkg();
+            $action = $this->parseWithIntent($message->getAction(), $message->getCustomData());
+            $message->setAction($action);
         }
 
         if ($message instanceof iOSMsg) {
@@ -295,6 +306,8 @@ class XingePush {
         if ($message instanceof AndroidMsg) {
             $params['platform'] = 'android'; // android：安卓；ios：苹果；all：安卓 & 苹果。仅支持全量推送和标签推送
             $params['multi_pkg'] = $message->getMultiPkg();
+            $action = $this->parseWithIntent($message->getAction(), $message->getCustomData());
+            $message->setAction($action);
         }
 
         if ($message instanceof iOSMsg) {
@@ -361,7 +374,7 @@ class XingePush {
         $msg->setContent($content);
         $msg->setEnvironment($environment);
         $msg->setMessageType($messageType);
-        $ret = self::$xinge->PushSingleDevice($token, $msg);
+        $ret = $this->PushSingleDevice($token, $msg);
         return $ret;
     }
 
@@ -405,9 +418,9 @@ class XingePush {
             }
             $msg->setAction($action);
         }
-        $msg->setCustom($customData);
+        $msg->setCustomData($customData);
         $msg->setMessageType($messageType);
-        $ret = self::$xinge->PushSingleAccount($account, $msg);
+        $ret = $this->PushSingleAccount($account, $msg);
         return $ret;
     }
 
@@ -430,9 +443,9 @@ class XingePush {
         $msg->setTitle($title);
         $msg->setContent($content);
         $msg->setEnvironment($environment);
-        $msg->setCustom($customData);
+        $msg->setCustomData($customData);
         $msg->setMessageType($messageType);
-        $ret = self::$xinge->PushSingleAccount($account, $msg);
+        $ret = $this->PushSingleAccount($account, $msg);
         return $ret;
     }
 
@@ -474,9 +487,9 @@ class XingePush {
             }
             $msg->setAction($action);
         }
-        $msg->setCustom($customData);
+        $msg->setCustomData($customData);
         $msg->setMessageType($messageType);
-        $ret = self::$xinge->PushAllDevices($msg);
+        $ret = $this->PushAllDevices($msg);
         return $ret;
     }
 
@@ -498,9 +511,9 @@ class XingePush {
         $msg->setTitle($title);
         $msg->setContent($content);
         $msg->setEnvironment($environment);
-        $msg->setCustom($customData);
+        $msg->setCustomData($customData);
         $msg->setMessageType($messageType);
-        $ret = self::$xinge->PushAllDevices($msg);
+        $ret = $this->PushAllDevices($msg);
         return $ret;
     }
 
@@ -543,6 +556,8 @@ class XingePush {
         if ($message instanceof AndroidMsg) {
             $params['platform'] = 'android'; // android：安卓；ios：苹果；all：安卓 & 苹果。仅支持全量推送和标签推送
             $params['multi_pkg'] = $message->getMultiPkg();
+            $action = $this->parseWithIntent($message->getAction(), $message->getCustomData());
+            $message->setAction($action);
         }
         if ($message instanceof iOSMsg) {
             $environment = $message->getEnvironment();
@@ -585,7 +600,7 @@ class XingePush {
         $msg->setTitle($title);
         $msg->setContent($content);
         $msg->setMessageType($messageType);
-        $ret = self::$xinge->PushTags([$tags], 'OR', $msg);
+        $ret = $this->PushTags([$tags], 'OR', $msg);
         return $ret;
     }
 
@@ -608,7 +623,7 @@ class XingePush {
         $msg->setContent($content);
         $msg->setEnvironment($environment);
         $msg->setMessageType($messageType);
-        $ret = self::$xinge->PushTags([$tags], 'OR', $msg);
+        $ret = $this->PushTags([$tags], 'OR', $msg);
         return $ret;
     }
 
@@ -637,6 +652,21 @@ class XingePush {
     }
 
     /**
+     * @param ClickAction $action
+     * @param array       $customContent
+     *
+     * @return ClickAction
+     */
+    private function parseWithIntent($action, array $customContent = []) {
+        if ($action->getActionType() === ClickAction::TYPE_INTENT) {
+            $intent = $action->getIntent();
+            $intent .= (strpos($intent, '?') === false ? '?' : '&') . http_build_query($customContent);
+            $action->setIntent($intent);
+        }
+        return $action;
+    }
+
+    /**
      * Json 转数组
      *
      * @param string $json
@@ -662,5 +692,4 @@ class XingePush {
         );
         return $this->json2Array($ret) ?: $ret;
     }
-
 }

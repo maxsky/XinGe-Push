@@ -27,7 +27,7 @@ class iOSMsg {
     /** @var string 原生消息内容 */
     private $m_raw;
     /** @var array 自定义数据 */
-    private $m_custom;
+    private $m_customData;
     /** @var string 消息标题 */
     private $m_title;
     /** @var string 消息内容 */
@@ -109,8 +109,8 @@ class iOSMsg {
         return $ret;
     }
 
-    public function setCustom($custom) {
-        $this->m_custom = $custom;
+    public function setCustomData($customData) {
+        $this->m_customData = $customData;
     }
 
     public function setRaw($raw) {
@@ -208,8 +208,8 @@ class iOSMsg {
         }
         $ret['ios']['aps'] = $aps;
 //        $ret['ios']['xg_media_resources'] = $this->m_mediaResources;
-        if ($this->m_custom) {
-            $ret['ios'] += $this->m_custom;
+        if ($this->m_customData) {
+            $ret['ios'] += $this->m_customData;
         }
         $ret['accept_time'] = $this->acceptTimeToArray();
         return $ret;
@@ -242,7 +242,7 @@ class iOSMsg {
             }
         }
 
-        if (!empty($this->m_custom) && !is_array($this->m_custom)) {
+        if (!empty($this->m_customData) && !is_array($this->m_customData)) {
             return false;
         }
 

@@ -120,7 +120,7 @@ $action->setConfirmOnUrl(0);
 $message->setAction($action);
 $message->setStyle($style);
 // 设置自定义数据
-$message->setCustom(['key' => 'value']);
+$message->setCustomData(['key' => 'value']);
 // 设置富媒体资源地址（目前仅 Android，且只能设置 1 条数据）
 // 设置后下拉戳开通知栏可以看到该资源
 $message->setMediaResources('https://www.maxsky.cc/images/avatar.jpg');
